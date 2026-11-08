@@ -1,0 +1,12 @@
+{
+    "id": "{99B2BEE4-4E7B-4C4A-A97B-FB69A425D9F4}",
+    "author": "Dominik Pfister",
+    "name": "Shelly",
+    "url": "https://github.com/Pfischi-Informatik/SymconShelly",
+    "compatibility": {
+        "version": "7.0"
+    },
+    "version": "1.0",
+    "build": 1,
+    "date": 0
+}

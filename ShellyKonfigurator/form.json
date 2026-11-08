@@ -1,0 +1,25 @@
+{
+    "elements": [
+        { "type": "ValidationTextBox", "name": "ManualHosts", "caption": "Weitere IPs, kommagetrennt (z.B. anderes VLAN)" }
+    ],
+    "actions": [
+        {
+            "type": "Configurator",
+            "name": "Devices",
+            "caption": "Gefundene Shellys",
+            "rowCount": 20,
+            "add": false,
+            "delete": true,
+            "sort": { "column": "name", "direction": "ascending" },
+            "columns": [
+                { "name": "name", "caption": "Name", "width": "auto" },
+                { "name": "model", "caption": "Modell", "width": "180px" },
+                { "name": "gen", "caption": "Gen", "width": "60px" },
+                { "name": "host", "caption": "IP", "width": "140px" },
+                { "name": "device", "caption": "Geraete-ID", "width": "220px" }
+            ],
+            "values": []
+        }
+    ],
+    "status": []
+}

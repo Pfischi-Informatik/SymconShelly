@@ -1,0 +1,18 @@
+{
+    "elements": [
+        { "type": "ValidationTextBox", "name": "Host", "caption": "IP-Adresse" },
+        { "type": "PasswordTextBox", "name": "Password", "caption": "Passwort (nur falls am Shelly gesetzt)" },
+        { "type": "NumberSpinner", "name": "Poll", "caption": "Abfrage-Intervall (0 = aus, z.B. bei Akkugeraeten)", "suffix": "s", "minimum": 0 },
+        { "type": "CheckBox", "name": "ConfigureMQTT", "caption": "MQTT am Shelly automatisch auf Symcon einstellen" },
+        { "type": "ValidationTextBox", "name": "MQTTServer", "caption": "Symcon-IP fuer MQTT (leer = automatisch)" }
+    ],
+    "actions": [
+        { "type": "Button", "caption": "Jetzt abfragen", "onClick": "SHY_Update($id);" }
+    ],
+    "status": [
+        { "code": 102, "icon": "active", "caption": "Verbunden" },
+        { "code": 104, "icon": "inactive", "caption": "IP-Adresse fehlt" },
+        { "code": 201, "icon": "error", "caption": "Shelly nicht erreichbar oder Passwort falsch" },
+        { "code": 202, "icon": "error", "caption": "Symcon-IP unbekannt, bitte eintragen" }
+    ]
+}

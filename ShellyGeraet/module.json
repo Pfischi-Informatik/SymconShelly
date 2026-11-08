@@ -1,0 +1,12 @@
+{
+    "id": "{93B8060F-DCD6-444D-8D7F-1ED9A0696C77}",
+    "name": "Shelly Geraet",
+    "type": 3,
+    "vendor": "Shelly",
+    "aliases": ["Shelly Gen2", "Shelly Gen3", "Shelly Gen4"],
+    "parentRequirements": ["{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}"],
+    "childRequirements": [],
+    "implemented": ["{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}"],
+    "prefix": "SHY",
+    "url": "https://github.com/Pfischi-Informatik/SymconShelly"
+}

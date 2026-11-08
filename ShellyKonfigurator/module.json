@@ -1,0 +1,12 @@
+{
+    "id": "{E58C6B15-555D-4000-BF62-D1612A9DB02A}",
+    "name": "Shelly Konfigurator",
+    "type": 4,
+    "vendor": "Shelly",
+    "aliases": ["Shelly Discovery"],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "SHYC",
+    "url": "https://github.com/Pfischi-Informatik/SymconShelly"
+}
