@@ -164,4 +164,9 @@ assert($m->cmd('rgbw', 0, 'rgb', 0xFF0010) === ['RGBW.Set', ['id' => 0, 'on' => 
 assert($m->cmd('rgbw', 0, 'white', 9) === ['RGBW.Set', ['id' => 0, 'on' => true, 'white' => 9]]);
 assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' => 0, 'pos' => 20]]);
 assert($m->cmd('cover', 0, 'action', 2) === ['Cover.Close', ['id' => 0]]);
+// Konfigurator und Geraet muessen dieselbe Verbindung haben, sonst scheitert "Erstellen" in Symcon
+$c = json_decode(file_get_contents(__DIR__ . '/../ShellyKonfigurator/module.json'), true);
+$d = json_decode(file_get_contents(__DIR__ . '/../ShellyGeraet/module.json'), true);
+assert($c['parentRequirements'] === $d['parentRequirements'] && $c['parentRequirements'] !== [], 'Verbindung');
+assert($c['implemented'] === $d['implemented'], 'Datenfluss');
 echo "OK\n";

@@ -10,11 +10,25 @@ class ShellyKonfigurator extends IPSModule
 {
     private const DEVICE = '{93B8060F-DCD6-444D-8D7F-1ED9A0696C77}';
     private const DNSSD = '{780B2D48-916C-4D59-AD35-5A429B2355A5}';
+    private const MQTT_SERVER = '{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}';
 
     public function Create(): void
     {
         parent::Create();
         $this->RegisterPropertyString('ManualHosts', '');
+        // Neue Geraete-Instanzen uebernehmen diese Verbindung, ohne sie meldet Symcon "Could not create instance"
+        $this->ConnectParent(self::MQTT_SERVER);
+    }
+
+    public function ApplyChanges(): void
+    {
+        parent::ApplyChanges();
+        $this->SetReceiveDataFilter('.*KEINE_DATEN.*');
+    }
+
+    public function ReceiveData($JSONString): string
+    {
+        return '';
     }
 
     public function GetConfigurationForm(): string
