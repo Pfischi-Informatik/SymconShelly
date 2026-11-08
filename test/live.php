@@ -143,7 +143,7 @@ assert($v['switch_0_output'] === true);
 assert($v['switch_0_aenergy_total'] === 1.5, 'Wh nach kWh');
 assert(!isset($v['switch_0_temperature_tC']), 'null ueberspringen');
 assert($v['rgbw_0_rgb'] === 0xFF0010);
-assert($v['cover_1_current_pos'] === 30 && isset($v['cover_1_action']));
+assert($v['cover_1_current_pos'] === 70 && isset($v['cover_1_action']), 'Position umgekehrt');
 assert($v['em_0_a_act_power'] === 5.0);
 assert($v['online'] === true);
 
@@ -162,7 +162,11 @@ assert($m->cmd('light', 1, 'brightness', 50) === ['Light.Set', ['id' => 1, 'on' 
 assert($m->cmd('light', 1, 'brightness', 0) === ['Light.Set', ['id' => 1, 'on' => false]]);
 assert($m->cmd('rgbw', 0, 'rgb', 0xFF0010) === ['RGBW.Set', ['id' => 0, 'on' => true, 'rgb' => [255, 0, 16]]]);
 assert($m->cmd('rgbw', 0, 'white', 9) === ['RGBW.Set', ['id' => 0, 'on' => true, 'white' => 9]]);
+assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' => 0, 'pos' => 80]]);
+$m->SetProperty('InvertPosition', false);
 assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' => 0, 'pos' => 20]]);
+$rx('shelly-a/status/cover:1', '{"current_pos":30}');
+assert($m->Values()['cover_1_current_pos'] === 30, 'ohne Umkehrung');
 assert($m->cmd('cover', 0, 'action', 2) === ['Cover.Close', ['id' => 0]]);
 // Konfigurator und Geraet muessen dieselbe Verbindung haben, sonst scheitert "Erstellen" in Symcon
 $c = json_decode(file_get_contents(__DIR__ . '/../ShellyKonfigurator/module.json'), true);

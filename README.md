@@ -23,7 +23,7 @@ Sie entstehen aus dem, was das Gerät meldet.
 | Light / Dimmer | zusätzlich Helligkeit | Status, Helligkeit |
 | RGB / RGBW | zusätzlich Farbe, bei RGBW Weiß | alle vier |
 | CCT | zusätzlich Farbtemperatur | Status, Helligkeit, Farbtemperatur |
-| Rollladen | Steuerung (Auf/Stopp/Zu), Zustand, Position (nur kalibriert), Messwerte | Steuerung, Position |
+| Rollladen | Steuerung (Auf/Stopp/Zu), Zustand, Position (nur kalibriert; 0 % = offen, per Häkchen umkehrbar), Messwerte | Steuerung, Position |
 | Eingang | Zustand, Analogwert | – |
 | EM, EM1, PM1 | Leistung, Spannung, Strom je Phase, Energie | – |
 | Sensoren | Temperatur, Luftfeuchte, Helligkeit, Spannung, Batterie | – |

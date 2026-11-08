@@ -37,6 +37,7 @@ class ShellyGeraet extends IPSModule
         $this->RegisterPropertyInteger('Poll', 60);
         $this->RegisterPropertyBoolean('ConfigureMQTT', true);
         $this->RegisterPropertyString('MQTTServer', '');
+        $this->RegisterPropertyBoolean('InvertPosition', true);
         $this->RegisterAttributeString('Topic', '');
         $this->RegisterAttributeBoolean('Ready', false);
         $this->RegisterTimer('Update', 0, 'SHY_Update($_IPS[\'TARGET\']);');
@@ -128,7 +129,7 @@ class ShellyGeraet extends IPSModule
     {
         if ($component === 'cover') {
             if ($field === 'current_pos') {
-                return ['Cover.GoToPosition', ['id' => $id, 'pos' => (int) $value]];
+                return ['Cover.GoToPosition', ['id' => $id, 'pos' => $this->position((int) $value)]];
             }
             return ['Cover.' . ['Open', 'Stop', 'Close'][(int) $value], ['id' => $id]];
         }
@@ -229,12 +230,21 @@ class ShellyGeraet extends IPSModule
             } elseif (is_numeric($value) && isset($spec[3])) {
                 $value *= $spec[3];
             }
+            if ($path === 'current_pos') {
+                $value = $this->position((int) $value);
+            }
             settype($value, ['boolean', 'integer', 'double', 'string'][$type]);
             $this->SetValue($ident, $value);
         }
         if ($component === 'cover') {
             $this->ensure('cover_' . $id . '_action', $this->label($component, $id) . 'Steuerung', 1, 'Shelly.Cover', $id * 100 + 9, true);
         }
+    }
+
+    // Shelly: 100 = offen. Mit Umkehrung in Symcon: 0 = offen. Gilt in beide Richtungen.
+    private function position(int $value): int
+    {
+        return $this->ReadPropertyBoolean('InvertPosition') ? 100 - $value : $value;
     }
 
     private function label(string $component, int $id): string
