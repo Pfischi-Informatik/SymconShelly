@@ -14,6 +14,7 @@
         { "code": 102, "icon": "active", "caption": "Verbunden" },
         { "code": 104, "icon": "inactive", "caption": "IP-Adresse fehlt" },
         { "code": 201, "icon": "error", "caption": "Shelly nicht erreichbar oder Passwort falsch" },
+        { "code": 203, "icon": "error", "caption": "Unter dieser IP antwortet ein anderer Shelly, bitte IP pruefen" },
         { "code": 202, "icon": "error", "caption": "Symcon-IP unbekannt, bitte eintragen" }
     ]
 }

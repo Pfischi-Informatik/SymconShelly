@@ -188,6 +188,24 @@ assert($m->status === 201 && $m->Values()['online'] === false, 'dritter Fehler =
 $rx('shelly-a/status/switch:0', '{"output":true}');
 assert($m->status === 102 && $m->Values()['online'] === true, 'MQTT heilt');
 
+// Falsches Geraet unter der IP: nichts schalten, nichts umkonfigurieren
+$m->fail = false;
+$m->SetProperty('DeviceID', 'shelly-b');
+$m->ApplyChanges();
+$m->mqtt['enable'] = false;
+$m->calls = [];
+assert($m->Update() === false && $m->status === 203, 'fremdes Geraet erkannt');
+ob_start();
+$m->RequestAction('switch_0_output', true);
+ob_end_clean();
+assert(array_unique(array_column($m->calls, 0)) === ['Shelly.GetDeviceInfo'], 'nur Pruefung, kein Befehl');
+$m->SetProperty('DeviceID', 'SHELLY-A');
+$m->ApplyChanges();
+assert($m->Update() === true && $m->status === 102, 'Gross/Klein egal');
+$m->calls = [];
+$m->RequestAction('switch_0_output', true);
+assert(in_array('Switch.Set', array_column($m->calls, 0)), 'richtiges Geraet schaltet');
+
 // Konfigurator findet bekannte Instanzen auch ohne mDNS
 require __DIR__ . '/../ShellyKonfigurator/module.php';
 class FakeKonf extends ShellyKonfigurator

@@ -11,6 +11,8 @@ Findet Shellys ab Gen2 (Gen2, Gen3, Gen4) im Netz und bindet sie in IP-Symcon ei
 Beim ersten Abruf stellt die Instanz den MQTT-Server am Shelly auf Symcon ein und startet ihn neu, falls nötig.
 **War der Shelly schon mit einem anderen Broker verbunden, wird dieser ersetzt** (steht dann im Symcon-Log). Das verhindert das Häkchen „MQTT automatisch einstellen“ in der Instanz.
 
+Antwortet unter der IP ein anderer Shelly als beim Erstellen, schaltet die Instanz nichts und meldet einen Fehler.
+
 Tipps: Shellys mit fester IP oder DHCP-Reservierung betreiben, denn die IP steht in der Instanz. Findet mDNS nichts (anderes VLAN), die IPs im Konfigurator eintragen. Akkugeräte: Abfrage-Intervall auf 0 stellen.
 
 ## Variablen

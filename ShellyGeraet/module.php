@@ -90,6 +90,10 @@ class ShellyGeraet extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
+        if ($this->wrongDevice()) {
+            echo 'Unter dieser IP antwortet ein anderer Shelly, Befehl nicht ausgefuehrt';
+            return;
+        }
         [$component, $id, $field] = explode('_', $Ident, 3);
         $id = (int) $id;
         [$method, $params] = $this->command($component, $id, $field, $Value);
@@ -106,6 +110,10 @@ class ShellyGeraet extends IPSModule
     public function Update(): bool
     {
         $poll = $this->ReadPropertyInteger('Poll');
+        if ($this->wrongDevice()) {
+            $this->SetTimerInterval('Update', max($poll, 60) * 1000);
+            return false;
+        }
         $ready = $this->ReadAttributeBoolean('Ready') || $this->setup();
         $status = $ready ? $this->rpc('Shelly.GetStatus') : null;
 
@@ -317,6 +325,21 @@ class ShellyGeraet extends IPSModule
     {
         $topic = $this->topic();
         $this->SetReceiveDataFilter($topic === '' ? '.*NICHTS.*' : '.*' . preg_quote($topic) . '.*');
+    }
+
+    // Vergibt der Router die IP neu, wuerde die Instanz sonst ein fremdes Geraet schalten
+    private function wrongDevice(): bool
+    {
+        $expected = $this->ReadPropertyString('DeviceID');
+        $info = $expected === '' ? null : $this->rpc('Shelly.GetDeviceInfo');
+        if ($info === null || strcasecmp((string) ($info['id'] ?? $expected), $expected) === 0) {
+            return false;
+        }
+        $this->LogMessage('Erwartet ' . $expected . ', unter der IP antwortet ' . $info['id'], KL_WARNING);
+        $this->WriteAttributeBoolean('Ready', false);
+        $this->SetStatus(203);
+        $this->setOnline(false);
+        return true;
     }
 
     protected function setup(): bool
