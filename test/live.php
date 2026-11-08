@@ -28,6 +28,8 @@ function IPS_SetVariableProfileIcon($n, $icon) {}
 function IPS_SetVariableProfileDigits($n, $d) {}
 function IPS_GetInstance($i) { return ['ConnectionID' => $i === 12345 ? 7 : 0]; }
 function Sys_GetNetworkInfo() { return [['IP' => '192.168.1.5']]; }
+function IPS_GetInstanceListByModuleID($g) { return str_starts_with($g, '{93B8') ? [1, 2] : []; }
+function IPS_GetProperty($i, $n) { return $i === 1 ? '192.168.1.94' : ''; }
 function IPS_GetKernelRunlevel() { return KR_READY; }
 
 class IPSModule
@@ -35,6 +37,9 @@ class IPSModule
     public $InstanceID = 12345;
     private $props = [], $attrs = [], $values = [];
     public $status = 0;
+    private $buffers = [];
+    protected function SetBuffer($n, $v) { $this->buffers[$n] = $v; }
+    protected function GetBuffer($n) { return $this->buffers[$n] ?? ''; }
     protected function ConnectParent($g) {}
     protected function SetReceiveDataFilter($f) {}
     protected function GetIDForIdent($i) { return isset($this->values[$i]) ? 1 : 0; }
@@ -93,10 +98,14 @@ if (isset($argv[1])) {
 class Fake extends ShellyGeraet
 {
     public $calls = [];
+    public $fail = false;
     public $mqtt = ['enable' => false, 'server' => null, 'topic_prefix' => 'shelly-a', 'status_ntf' => false];
     protected function rpc(string $method, array $params = []): ?array
     {
         $this->calls[] = [$method, $params];
+        if ($this->fail) {
+            return null;
+        }
         switch ($method) {
             case 'Shelly.GetDeviceInfo': return ['id' => 'shelly-a'];
             case 'MQTT.GetConfig': return $this->mqtt;
@@ -168,6 +177,27 @@ assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' =
 $rx('shelly-a/status/cover:1', '{"current_pos":30}');
 assert($m->Values()['cover_1_current_pos'] === 30, 'ohne Umkehrung');
 assert($m->cmd('cover', 0, 'action', 2) === ['Cover.Close', ['id' => 0]]);
+// Einzelne Aussetzer sind kein Ausfall, MQTT heilt sofort
+assert($m->Update() && $m->status === 102);
+$m->fail = true;
+$m->Update();
+$m->Update();
+assert($m->status === 102 && $m->Values()['online'] === true, 'zwei Fehler tolerieren');
+$m->Update();
+assert($m->status === 201 && $m->Values()['online'] === false, 'dritter Fehler = offline');
+$rx('shelly-a/status/switch:0', '{"output":true}');
+assert($m->status === 102 && $m->Values()['online'] === true, 'MQTT heilt');
+
+// Konfigurator findet bekannte Instanzen auch ohne mDNS
+require __DIR__ . '/../ShellyKonfigurator/module.php';
+class FakeKonf extends ShellyKonfigurator
+{
+    public function hosts() { return $this->discover(); }
+}
+$k = new FakeKonf();
+$k->Create();
+assert($k->hosts() === ['192.168.1.94'], 'bekannte IP');
+
 // Konfigurator und Geraet muessen dieselbe Verbindung haben, sonst scheitert "Erstellen" in Symcon
 $c = json_decode(file_get_contents(__DIR__ . '/../ShellyKonfigurator/module.json'), true);
 $d = json_decode(file_get_contents(__DIR__ . '/../ShellyGeraet/module.json'), true);

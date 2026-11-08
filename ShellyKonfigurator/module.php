@@ -95,6 +95,11 @@ class ShellyKonfigurator extends IPSModule
     protected function discover(): array
     {
         $hosts = array_filter(array_map('trim', explode(',', $this->ReadPropertyString('ManualHosts'))));
+        // Bekannte Geraete direkt fragen: mDNS verpasst bei schwachem WLAN einzelne Shellys
+        foreach (IPS_GetInstanceListByModuleID(self::DEVICE) as $id) {
+            $hosts[] = IPS_GetProperty($id, 'Host');
+        }
+        $hosts = array_filter($hosts);
         $dnssd = IPS_GetInstanceListByModuleID(self::DNSSD);
         if ($dnssd !== []) {
             foreach (ZC_QueryServiceType($dnssd[0], '_shelly._tcp', '') as $service) {
@@ -113,7 +118,7 @@ class ShellyKonfigurator extends IPSModule
     protected function deviceInfo(string $host): ?array
     {
         $ch = curl_init('http://' . $host . '/rpc/Shelly.GetDeviceInfo');
-        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 2]);
+        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 4]);
         $body = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         return ($body !== false && $code === 200) ? json_decode($body, true) : null;

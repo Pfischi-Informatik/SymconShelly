@@ -79,6 +79,10 @@ class ShellyGeraet extends IPSModule
             if (is_array($status)) {
                 $this->applyComponent(substr($rest, 7), $status);
                 $this->setOnline(true);
+                $this->SetBuffer('Failures', '0');
+                if ($this->ReadAttributeBoolean('Ready')) {
+                    $this->SetStatus(102);
+                }
             }
         }
         return '';
@@ -107,12 +111,18 @@ class ShellyGeraet extends IPSModule
 
         $this->SetTimerInterval('Update', ($ready ? $poll : max($poll, 60)) * 1000);
         if ($status === null) {
-            if ($ready) {
-                $this->SetStatus(201);
+            // Bei schwachem WLAN geht mal eine Abfrage verloren, das ist noch kein Ausfall
+            $failures = (int) $this->GetBuffer('Failures') + 1;
+            $this->SetBuffer('Failures', (string) $failures);
+            if ($failures >= 3) {
+                if ($ready) {
+                    $this->SetStatus(201);
+                }
+                $this->setOnline(false);
             }
-            $this->setOnline(false);
             return false;
         }
+        $this->SetBuffer('Failures', '0');
         foreach ($status as $key => $value) {
             if (is_array($value)) {
                 $this->applyComponent((string) $key, $value);
