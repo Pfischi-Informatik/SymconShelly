@@ -24,7 +24,7 @@ class ShellyGeraet extends IPSModule
     private const OUTPUT = ['output' => ['Status', 0, '~Switch', 1, true]];
     private const DIM = ['brightness' => ['Helligkeit', 1, 'Shelly.Percent', 1, true]];
     private const COLOR = ['rgb' => ['Farbe', 1, '~HexColor', 1, true]];
-    private const WHITE = ['white' => ['Weiss', 1, 'Shelly.Byte', 1, true]];
+    private const WHITE = ['white' => ['Weiss', 1, 'Shelly.Percent', 100 / 255, true]];
 
     // ==== Symcon ===============================================================
 
@@ -166,7 +166,10 @@ class ShellyGeraet extends IPSModule
             case 'rgb':
                 $params += ['on' => true, 'rgb' => [($value >> 16) & 255, ($value >> 8) & 255, $value & 255]];
                 break;
-            default: // white, ct
+            case 'white': // Shelly 0..255, Symcon 0..100 %
+                $params += ['on' => true, 'white' => (int) round($value * 2.55)];
+                break;
+            default: // ct
                 $params += ['on' => true, $field => (int) $value];
         }
         return [$class . '.Set', $params];
@@ -251,6 +254,9 @@ class ShellyGeraet extends IPSModule
             if ($path === 'current_pos') {
                 $value = $this->position((int) $value);
             }
+            if ($type === 1) {
+                $value = round($value);
+            }
             settype($value, ['boolean', 'integer', 'double', 'string'][$type]);
             $this->SetValue($ident, $value);
         }
@@ -299,7 +305,7 @@ class ShellyGeraet extends IPSModule
                 IPS_SetVariableProfileText('Shelly.' . $name, '', $suffix);
             }
         }
-        foreach (['Percent' => [0, 100, 1, ' %'], 'Byte' => [0, 255, 1, ''], 'Kelvin' => [2700, 6500, 100, ' K']] as $name => $v) {
+        foreach (['Percent' => [0, 100, 1, ' %'], 'Kelvin' => [2700, 6500, 100, ' K']] as $name => $v) {
             if (!IPS_VariableProfileExists('Shelly.' . $name)) {
                 IPS_CreateVariableProfile('Shelly.' . $name, VARIABLETYPE_INTEGER);
                 IPS_SetVariableProfileValues('Shelly.' . $name, $v[0], $v[1], $v[2]);

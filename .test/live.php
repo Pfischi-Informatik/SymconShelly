@@ -112,7 +112,7 @@ class Fake extends ShellyGeraet
             case 'MQTT.SetConfig': return ['restart_required' => true];
             case 'Shelly.GetStatus': return [
                 'switch:0' => ['output' => true, 'apower' => 12.5, 'aenergy' => ['total' => 1500], 'temperature' => ['tC' => null]],
-                'rgbw:0' => ['output' => true, 'brightness' => 40, 'rgb' => [255, 0, 16], 'white' => 7],
+                'rgbw:0' => ['output' => true, 'brightness' => 40, 'rgb' => [255, 0, 16], 'white' => 200],
                 'cover:1' => ['state' => 'stopped', 'current_pos' => 30],
                 'em:0' => ['a_act_power' => 5.0, 'total_act_power' => 9.0],
                 'wifi' => ['rssi' => -50],
@@ -152,6 +152,7 @@ assert($v['switch_0_output'] === true);
 assert($v['switch_0_aenergy_total'] === 1.5, 'Wh nach kWh');
 assert(!isset($v['switch_0_temperature_tC']), 'null ueberspringen');
 assert($v['rgbw_0_rgb'] === 0xFF0010);
+assert($v['rgbw_0_white'] === 78, 'Weiss 200/255 = 78 % wie in der Shelly-App');
 assert($v['cover_1_current_pos'] === 70 && isset($v['cover_1_action']), 'Position umgekehrt');
 assert($v['em_0_a_act_power'] === 5.0);
 assert($v['online'] === true);
@@ -170,7 +171,8 @@ assert($m->cmd('switch', 0, 'output', true) === ['Switch.Set', ['id' => 0, 'on' 
 assert($m->cmd('light', 1, 'brightness', 50) === ['Light.Set', ['id' => 1, 'on' => true, 'brightness' => 50]]);
 assert($m->cmd('light', 1, 'brightness', 0) === ['Light.Set', ['id' => 1, 'on' => false]]);
 assert($m->cmd('rgbw', 0, 'rgb', 0xFF0010) === ['RGBW.Set', ['id' => 0, 'on' => true, 'rgb' => [255, 0, 16]]]);
-assert($m->cmd('rgbw', 0, 'white', 9) === ['RGBW.Set', ['id' => 0, 'on' => true, 'white' => 9]]);
+assert($m->cmd('rgbw', 0, 'white', 78) === ['RGBW.Set', ['id' => 0, 'on' => true, 'white' => 199]]);
+assert($m->cmd('rgbw', 0, 'white', 100) === ['RGBW.Set', ['id' => 0, 'on' => true, 'white' => 255]]);
 assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' => 0, 'pos' => 80]]);
 $m->SetProperty('InvertPosition', false);
 assert($m->cmd('cover', 0, 'current_pos', 20) === ['Cover.GoToPosition', ['id' => 0, 'pos' => 20]]);

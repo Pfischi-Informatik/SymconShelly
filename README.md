@@ -23,7 +23,7 @@ Sie entstehen aus dem, was das Gerät meldet.
 |---|---|---|
 | Schalter | Status, Leistung, Spannung, Strom, Frequenz, Energie, Temperatur | Status |
 | Light / Dimmer | zusätzlich Helligkeit | Status, Helligkeit |
-| RGB / RGBW | zusätzlich Farbe, bei RGBW Weiß | alle vier |
+| RGB / RGBW | zusätzlich Farbe, bei RGBW Weiß (0–100 %) | alle vier |
 | CCT | zusätzlich Farbtemperatur | Status, Helligkeit, Farbtemperatur |
 | Rollladen | Steuerung (Auf/Stopp/Zu), Zustand, Position (nur kalibriert; 0 % = offen, per Häkchen umkehrbar), Messwerte | Steuerung, Position |
 | Eingang | Zustand, Analogwert | – |
@@ -37,8 +37,8 @@ Sie entstehen aus dem, was das Gerät meldet.
 ## Test
 
 ```bash
-php -d zend.assertions=1 -d assert.exception=1 test/live.php
-php -d zend.assertions=1 -d assert.exception=1 test/live.php 192.168.1.20
+php -d zend.assertions=1 -d assert.exception=1 .test/live.php
+php -d zend.assertions=1 -d assert.exception=1 .test/live.php 192.168.1.20
 ```
 
 Ohne Argument läuft der Selbsttest gegen einen simulierten Shelly. Mit IP wird der echte Shelly nur gelesen, es wird nichts geschaltet und MQTT nicht verändert.
